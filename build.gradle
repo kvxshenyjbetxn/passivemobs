@@ -1,0 +1,78 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "gtnh"
+            url = "https://nexus.gtnewhorizons.com/repository/public/"
+        }
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net/"
+        }
+    }
+    dependencies {
+        classpath 'com.anatawa12.forge:ForgeGradle:1.2-1.0.12'
+    }
+}
+
+apply plugin: 'forge'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+}
+
+group   = 'com.passivemobs'
+version = '1.3.0'
+archivesBaseName = "passivemobs"
+
+minecraft {
+    version = '1.7.10-10.13.4.1614-1.7.10'
+    runDir  = 'run'
+}
+
+repositories {
+    maven {
+        name = "gtnh"
+        url  = "https://nexus.gtnewhorizons.com/repository/public/"
+    }
+}
+
+dependencies {}
+
+// Java 25+ compatibility for running Gradle tasks
+tasks.withType(JavaExec) {
+    jvmArgs += [
+        '-XX:+IgnoreUnrecognizedVMOptions',
+        '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.net=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.io=ALL-UNNAMED'
+    ]
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', project.minecraft.version
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            'FMLCorePlugin':                 'com.passivemobs.asm.PassiveMobsCorePlugin',
+            'FMLCorePluginContainsFMLMod':    'true'
+        )
+    }
+}

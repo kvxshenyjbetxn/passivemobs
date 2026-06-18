@@ -1,0 +1,15 @@
+{
+  "modListVersion": 2,
+  "modList": [
+    {
+      "modid": "passivemobs",
+      "name": "Passive Mobs",
+      "description": "Makes all hostile mobs completely passive \u2014 they do not see, target, or attack players. Built for GTNH 1.7.10. Server-side, zero side effects, /passivemobs command for live toggle.",
+      "version": "${version}",
+      "mcversion": "${mcversion}",
+      "authorList": ["kvxshenyjbetxn"],
+      "credits": "Built for GTNH 2.8.x",
+      "dependencies": []
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+# Build
+build/
+out/
+.classpath
+.project
+.settings/
+bin/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Mod
+run/
+logs/
+crash-reports/
+
+# Config (generated at runtime)
+config/PassiveMobs.cfg
