@@ -18,17 +18,29 @@ public class PassiveMobsMod {
 
     public static final String MODID   = "passivemobs";
     public static final String NAME    = "Passive Mobs";
-    public static final String VERSION = "1.3.0";
+    public static final String VERSION = "1.4.0";
 
     public static boolean enabled = true;
+    public static boolean allowBosses = true;
+    public static String[] excludedEntities = new String[0];
+    private static java.io.File configFile;
+
+    private static void loadConfig() {
+        Configuration cfg = new Configuration(configFile);
+        cfg.load();
+        enabled = cfg.getBoolean("enabled", "general", true, "Master switch. Set to false to disable the mod.");
+        allowBosses = cfg.getBoolean("allowBosses", "general", true,
+            "Leave IBossDisplayData and Galacticraft IBoss bosses untouched, including targeting and damage, to preserve encounters.");
+        excludedEntities = cfg.getStringList("excludedEntities", "general", new String[0],
+            "Fully qualified entity class or interface names to leave untouched (includes subclasses/implementations). Use for custom bosses or encounter triggers.");
+        if (cfg.hasChanged()) cfg.save();
+        NoPlayerTargetTransformer.active = enabled;
+    }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
-        cfg.load();
-        enabled = cfg.getBoolean("enabled", "general", true, "Master switch. Set to false to disable the mod.");
-        if (cfg.hasChanged()) cfg.save();
-        NoPlayerTargetTransformer.active = enabled;
+        configFile = event.getSuggestedConfigurationFile();
+        loadConfig();
     }
 
     @Mod.EventHandler
@@ -55,12 +67,7 @@ public class PassiveMobsMod {
                     case "on":  enabled = true;  NoPlayerTargetTransformer.active = true;  chat(s, "§aPassiveMobs enabled."); break;
                     case "off": enabled = false; NoPlayerTargetTransformer.active = false; chat(s, "§cPassiveMobs disabled! Mobs will attack!"); break;
                     case "reload":
-                        Configuration cfg = new Configuration(
-                            new java.io.File("config/PassiveMobs.cfg"));
-                        cfg.load();
-                        enabled = cfg.getBoolean("enabled", "general", true, "");
-                        if (cfg.hasChanged()) cfg.save();
-                        NoPlayerTargetTransformer.active = enabled;
+                        loadConfig();
                         chat(s, "§aConfig reloaded. Enabled: " + enabled);
                         break;
                 }

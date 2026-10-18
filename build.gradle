@@ -26,7 +26,7 @@ compileJava {
 }
 
 group   = 'com.passivemobs'
-version = '1.3.0'
+version = '1.4.0'
 archivesBaseName = "passivemobs"
 
 minecraft {
@@ -43,9 +43,20 @@ repositories {
 
 dependencies {}
 
+// Bytecode checks do not require a running Minecraft client/server or a test framework.
+task transformerRegression(type: JavaExec, dependsOn: testClasses) {
+    classpath = sourceSets.test.compileClasspath + sourceSets.test.output + sourceSets.main.output
+    mainClass = 'com.passivemobs.asm.TransformerRegressionTest'
+    args new File(gradle.gradleUserHomeDir,
+            'caches/minecraft/net/minecraft/minecraft_merged/1.7.10/minecraft_merged-1.7.10.jar').absolutePath
+}
+check.dependsOn transformerRegression
+// The regression runner only needs Java classes, not Minecraft's native input libraries.
+test.classpath = sourceSets.test.compileClasspath + sourceSets.test.output + sourceSets.main.output
+
 // Java 25+ compatibility for running Gradle tasks
 tasks.withType(JavaExec) {
-    jvmArgs += [
+    if (JavaVersion.current().isJava9Compatible()) jvmArgs += [
         '-XX:+IgnoreUnrecognizedVMOptions',
         '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
         '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED',
